@@ -23,6 +23,4 @@ public class RefreshToken {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private Users user;
-
-    private Boolean isRevoked;
 }

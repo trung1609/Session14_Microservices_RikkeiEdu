@@ -11,6 +11,7 @@ import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Date;
@@ -22,6 +23,8 @@ public class RefreshTokenService {
     private final JwtUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuthRepository authRepository;
+    @Value("${jwt.access-token-expiration}")
+    private long accessTokenDurationMs;
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenDurationMs;
 
@@ -32,7 +35,6 @@ public class RefreshTokenService {
         refreshToken.setUser(authRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found")));
         refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
         refreshToken.setToken(UUID.randomUUID().toString());
-        refreshToken.setIsRevoked(false);
 
         refreshToken = refreshTokenRepository.save(refreshToken);
         return refreshToken;
@@ -44,5 +46,23 @@ public class RefreshTokenService {
             throw new RuntimeException("Refresh token was expired. Please make a new signin request.");
         }
         return token;
+    }
+
+    @Transactional
+    public JwtResponse refreshToken(RefreshTokenRequest request) {
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(request.getRefreshToken()).orElseThrow(() -> new JwtException("Refresh token not found"));
+
+        refreshToken = verifyExpiration(refreshToken);
+
+        refreshTokenRepository.delete(refreshToken);
+
+        Users users = refreshToken.getUser();
+
+        String newAccessToken = jwtUtil.generateAccessToken(users);
+        RefreshToken newRefreshToken = createRefreshToken(users.getId());
+
+        refreshTokenRepository.save(newRefreshToken);
+
+        return new JwtResponse(newAccessToken, newRefreshToken.getToken(), accessTokenDurationMs, refreshTokenDurationMs);
     }
 }
