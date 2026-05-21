@@ -18,7 +18,7 @@ spring:
                 - Path=/product/api/products/**
               filters:
                 - StripPrefix=1
-                - AuthenticationFilter
+
 server:
   port: 8888
 
