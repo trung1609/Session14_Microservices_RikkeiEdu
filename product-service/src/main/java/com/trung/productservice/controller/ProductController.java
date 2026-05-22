@@ -17,13 +17,14 @@ public class ProductController {
             "Bàn phím cơ Keychron"
     ));
     @GetMapping
-    public ResponseEntity<List<String>> getAllProducts() {
-        return ResponseEntity.ok(products);
+    @PreAuthorize("hasAuthority('PRODUCT_READ')")
+    public List<String> getProducts() {
+        return products;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable int id) {
-        return ResponseEntity.ok("Deleted product with ID: " + id + " successfully!");
+    @PostMapping
+    @PreAuthorize("hasAuthority('PRODUCT_CREATE')")
+    public String createProduct() {
+        return "Đã tạo sản phẩm (200 OK)";
     }
 }

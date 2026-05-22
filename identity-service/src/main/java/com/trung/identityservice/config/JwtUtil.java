@@ -35,6 +35,7 @@ public class JwtUtil {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", users.getRole());
         claims.put("type", "access");
+        claims.put("permissions", users.getPermissions());
         String jti = UUID.randomUUID().toString();
         claims.put("jti", jti);
         Date now = new Date();
