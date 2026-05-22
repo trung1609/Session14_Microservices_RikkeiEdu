@@ -2,6 +2,7 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
@@ -11,18 +12,9 @@
         <module name="identity-service.test" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel target="17" />
   </component>
   <component name="JavacSettings">
-    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="gateway-service" options="-parameters" />
-      <module name="gateway-service.main" options="-parameters" />
-      <module name="gateway-service.test" options="-parameters" />
-      <module name="identity-service" options="-parameters" />
-      <module name="identity-service.main" options="-parameters" />
-      <module name="identity-service.test" options="-parameters" />
-      <module name="product-service" options="-parameters" />
-      <module name="product-service.main" options="-parameters" />
-      <module name="product-service.test" options="-parameters" />
-    </option>
+    <option name="ADDITIONAL_OPTIONS_STRING" value="-parameters" />
   </component>
 </project>
