@@ -2,6 +2,8 @@ package com.trung.gatewayservice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 @Configuration
 public class GatewayConfig {
@@ -17,8 +19,8 @@ public class GatewayConfig {
     }
 
     @Bean
-    public AuthenticationFilter authenticationFilter(RouteValidator routeValidator, JwtUtil jwtUtil) {
-        return new AuthenticationFilter(routeValidator, jwtUtil);
+    public AuthenticationFilter authenticationFilter(RouteValidator routeValidator, JwtUtil jwtUtil, ReactiveStringRedisTemplate redisTemplate) {
+        return new AuthenticationFilter(routeValidator, jwtUtil, redisTemplate);
     }
 }
 

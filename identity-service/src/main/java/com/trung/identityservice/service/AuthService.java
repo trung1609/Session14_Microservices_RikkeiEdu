@@ -13,6 +13,7 @@ import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
-    private final StringRedisTemplate redisTemplate;
+    private final ReactiveStringRedisTemplate redisTemplate;
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Value("${jwt.access-token-expiration}")
@@ -65,7 +66,7 @@ public class AuthService {
             long expiration = jwtUtil.extractExpiration(accessToken);
             long ttl = expiration - System.currentTimeMillis();
             if (ttl > 0) {
-                redisTemplate.opsForValue().set("blacklist:" + jti, "logged_out", ttl, TimeUnit.MILLISECONDS);
+                redisTemplate.opsForValue().set("blacklist:"+jti, "logout", ttl).block();
             }
         }catch (ExpiredJwtException e){
             throw new JwtException("Token has expired");
